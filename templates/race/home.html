@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block style %}
+   #label_file {
+        color: #175d79;
+        background-color: #8593ff;
+        height: 52px;
+        width: 100%;
+        text-align: center;
+        padding-top: 15px;
+        border-radius: 25px;
+        box-shadow: 0px 5px 13px 2px
+    }
+    button {
+        margin-top: 60px;
+        margin-left: 30%;
+    }
+{% endblock style %}
+{% block message %}
+    {% if status %}
+        {% include 'includes/message.html' %}
+    {% endif %}
+{% endblock message %}
+{% block content %}
+    <div class="container-fluid" style="margin-top: 150px;">
+        <div class="row">
+            <div class="col-3 offset-4">
+                <form action="{% url 'home' %}" method="post" enctype='multipart/form-data'>
+                    {% csrf_token %}
+                    <input style="display: none;" type="file" name="file" id="file">
+                    <label id="label_file" for="file">Выбирите файл</label>
+                  <p class="file-return mt-3"></p>
+                    <button class="btn btn-warning btn-lg">Отправить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block script %}
+    $(function(){
+        $('#file').change(function(){
+            $('.file-return').html($(this).val().slice(12))
+            //console.log($(this).val().slice(12))
+            }
+        )
+    })
+{% endblock script %}

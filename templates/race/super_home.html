@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block style %}
+
+{% endblock style %}
+{% block message %}
+    {% if status %}
+        {% include 'includes/message.html' %}
+    {% endif %}
+{% endblock message %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-10 offset-1 mt-3 text-center">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="btn btn-danger" id="delete_all">Удалить данные</div>
+                    </div>
+                    <div class="col-4">
+                        <a class="btn btn-info" href="{% url 'excel_dump' %}">Скачать Excel</a>
+                    </div>
+                    <div class="col-4">
+                        <form action="{% url 'excel_upload' %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="file" style="display: none" name="file" id="file_password" onchange="this.form.submit()">
+                            <label for="file_password" class="btn btn-warning">Пароли КП</label>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% include 'includes/results.html' %}
+{#            <div class="col-12">#}
+{#                <table class="table mt-3">#}
+{#                    <thead>#}
+{#                    <tr>#}
+{#                        <th>#}
+{#                            Number#}
+{#                        </th>#}
+{#                        {% for col in colums %}#}
+{#                            <th>#}
+{#                                {{ col.name }}#}
+{#                            </th>#}
+{#                        {% endfor %}#}
+{#                    </tr>#}
+{#                    </thead>#}
+{#                <tbody>#}
+{#                    {% for run in runer %}#}
+{#                        <tr>#}
+{#                        <td>#}
+{#                            {{ run.number }}#}
+{#                        </td>#}
+{#                        {% for col in colums %}#}
+{#                            <td>{%  d_v_date run col.id %}</td>#}
+{#                        {% endfor %}#}
+{#                        </tr>#}
+{#                {% endfor %}#}
+{#                </tbody>#}
+{#                </table>#}
+{#            </div>#}
+        </div>
+    </div>
+{% endblock content %}
+{% block script %}
+$(function () {
+            $('#delete_all').click(function () {
+                let x = confirm('удалить все данные?')
+                if (x) {
+                    location.href = 'http://' + window.location.hostname + ':8000/cpp-delete-all'
+                } else {
+                    console.log('cancel')
+                }
+            })
+        })
+{% endblock script %}

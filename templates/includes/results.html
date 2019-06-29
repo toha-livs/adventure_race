@@ -1,0 +1,29 @@
+{% load dict_vars %}
+<div class="col-12">
+    <table class="table mt-3">
+        <thead>
+        <tr>
+            <th>
+                Number
+            </th>
+            {% for col in colums %}
+                <th>
+                    {{ col.name }}
+                </th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for run in runer %}
+            <tr>
+                <td>
+                    {{ run.number }}
+                </td>
+                {% for col in colums %}
+                   {% autoescape off %} <td>{% d_v_date run col.id %}</td> {% endautoescape %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

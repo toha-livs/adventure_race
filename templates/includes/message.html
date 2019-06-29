@@ -1,0 +1,16 @@
+{% if status.success == True %}
+<div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">{{ status.msg_title }}</h4>
+    <p>{{ status.msg_content }}</p>
+    <hr>
+    <p class="mb-0">{{ status.msg_footer }}</p>
+</div>
+{% elif status.success == 'bad' %}
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">{{ status.msg_title }}</h4>
+    <p>{{ status.msg_content }}</p>
+    <hr>
+    <p class="mb-0">{{ status.msg_footer }}</p>
+</div>
+{% else %}
+{% endif %}
