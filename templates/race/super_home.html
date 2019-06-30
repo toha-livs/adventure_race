@@ -71,7 +71,7 @@ $(function () {
             $('#delete_all').click(function () {
                 let x = confirm('удалить все данные?')
                 if (x) {
-                    location.href = 'https://adventure-race.herokuapp.com/cpp-delete-all'
+                    location.href = '{% url 'delete_cpp' %}'
                 } else {
                     console.log('cancel')
                 }
