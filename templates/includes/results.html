@@ -1,6 +1,6 @@
 {% load dict_vars %}
 <div class="col-12">
-    <table class="table mt-3">
+    <table class="table mt-3" style="display: block; overflow-x: auto; white-space: nowrap;">
         <thead>
         <tr>
             <th>
@@ -17,7 +17,7 @@
         {% for run in runer %}
             <tr>
                 <td>
-                    {{ run.number }}
+                    {{ run.number }} | {{ run.name }}
                 </td>
                 {% for col in colums %}
                    {% autoescape off %} <td>{% d_v_date run col.id %}</td> {% endautoescape %}

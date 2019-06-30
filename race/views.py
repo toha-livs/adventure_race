@@ -12,7 +12,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
 from django.views.generic.base import View
 from django.contrib import messages
-from race.models import ControlPoint, CPProtocol, ResultRuns
+from race.models import ControlPoint, CPProtocol, ResultRuns, RunGuys
 from race.utils import post_from_stuff, WriterMessages, Results, AdminView, XLSXClass
 
 
@@ -93,7 +93,26 @@ class ExcelDump(AdminView, Results, XLSXClass):
         return response
 
 
-class ExcelUpload(AdminView, WriterMessages):
+class NameUpload(AdminView, WriterMessages):
+
+    def post(self, request, **kwargs):
+        try:
+            data = XLSXClass(request.FILES['file'], name=True)
+            data = data.start_pars()
+        except SyntaxError:
+            self.write_msg(request, False, 'Ошибка, данны в excel невалидны')
+            return redirect('home')
+        run_guys_obj = [RunGuys(**run_guy) for run_guy in data]
+        try:
+            RunGuys.objects.bulk_create(run_guys_obj)
+            self.write_msg(request, True, f'Добавлено имен бегунов {len(run_guys_obj)}.')
+            return redirect('home')
+        except IntegrityError:
+            self.write_msg(request, False, 'Ошибка, номера бегунов неуникальны')
+            return redirect('home')
+
+
+class PasswordUpload(AdminView, WriterMessages):
 
     def set_control_point(self, data, cp_sum=False):
         save_list = []

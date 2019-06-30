@@ -42,14 +42,16 @@ class ResultRuns(Model):
     passed_checkpoint = TextField()
     date_update = DateTimeField()
 
-    # def set_info(self, result, cp):
-    #     self.pre_result = json.dumps(result)
-    #     self.passed_checkpoint = json.dumps(cp)
-    #     self.date_update = timezone.now()
-    #     self.save()
-
     def get_dicts(self):
         return json.loads(self.pre_result), json.loads(self.passed_checkpoint)
 
     def __str__(self):
         return f'<ResultRuns: pre_result={self.pre_result}, passed_checkpoint={self.passed_checkpoint}'
+
+
+class RunGuys(Model):
+    number = IntegerField(unique=True)
+    name = CharField(max_length=128)
+
+    def __str__(self):
+        return f'<RunGuys: number={self.number}, name={self.name}'

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import HomeView, CPView, ExcelDump, DeleteCpp, ResultsGuest, ExcelUpload, test_cpp, review_result
+from .views import HomeView, CPView, ExcelDump, NameUpload, DeleteCpp, ResultsGuest, PasswordUpload, test_cpp, review_result
 
 urlpatterns = [
     path('', ResultsGuest.as_view(), name='guest'),
@@ -7,7 +7,8 @@ urlpatterns = [
     path('cpp', CPView.as_view(), name='cpp'),
     path('cpp-delete-all', DeleteCpp.as_view(), name='delete_cpp'),
     path('excel-dump', ExcelDump.as_view(), name='excel_dump'),
-    path('excel-upload', ExcelUpload.as_view(), name='excel_upload'),
+    path('password-cp-upload', PasswordUpload.as_view(), name='password_cp_upload'),
+    path('name-upload', NameUpload.as_view(), name='name_upload'),
     path('test', test_cpp, name='test'),
     path('review-result', review_result, name='review-result')
 ]

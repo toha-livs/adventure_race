@@ -27,7 +27,7 @@
                 <form action="{% url 'home' %}" method="post" enctype='multipart/form-data'>
                     {% csrf_token %}
                     <input style="display: none;" type="file" name="file" id="file">
-                    <label id="label_file" for="file">Выбирите файл</label>
+                    <label id="label_file" for="file">Выберите файл</label>
                   <p class="file-return mt-3"></p>
                     <button class="btn btn-warning btn-lg">Отправить</button>
                 </form>
