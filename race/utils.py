@@ -2,7 +2,6 @@ import json
 
 import pandas as pd
 import xlsxwriter as xlsxwriter
-import xlwt
 import datetime
 from django.contrib import messages
 from django.http import HttpResponseForbidden
@@ -18,6 +17,7 @@ class AdminView(View):
         if request.user.is_superuser:
             return super().dispatch(request, *args, **kwargs)
         return HttpResponseForbidden()
+
 
 class Scope:
     final = []
@@ -69,7 +69,7 @@ class Results:
         if res:
             res.delete()
             ResultRuns(pre_result=json.dumps(self.response), passed_checkpoint=json.dumps(self.passed_checkpoints),
-                           date_update=timezone.now()).save()
+                       date_update=timezone.now()).save()
         else:
             ResultRuns(pre_result=json.dumps(self.response), passed_checkpoint=json.dumps(self.passed_checkpoints),
                        date_update=timezone.now()).save()
@@ -117,23 +117,24 @@ class WriterMessages:
         return request
 
     @staticmethod
-    def check_message(storage):
+    def check_message(storage: list) -> dict:
         message = [str(i) for i in storage]
-        if message:
-            message = message[0]
-            date_update = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
-            context = {'status': {'msg_title': json.loads(message).get('msg_title', None),
-                                  'msg_content': json.loads(message).get('msg_content', None),
-                                  'msg_footer': f'Дата обновления {date_update}',
-                                  'success': json.loads(message)['success']
-                                  }}
-            return context
-        return {}
+        if not message:
+            return {}
+        message = message[0]
+        date_update = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
+        context = {'status':
+                       {'msg_title': json.loads(message).get('msg_title', None),
+                        'msg_content': json.loads(message).get('msg_content', None),
+                        'msg_footer': f'Дата обновления {date_update}',
+                        'success': json.loads(message)['success']
+                        }}
+        return context
 
 
 class XLSXClass:
-    headers = []
     ws = None
+    headers = []
     colums = None
     date_time_wb_format = None
 
@@ -236,13 +237,12 @@ class XLSXClass:
         return xlsx_data
 
 
-def post_from_stuff(request):
+def post_from_stuff(request) -> dict:
     control_point = ControlPoint.objects.filter(user=request.user).first()
     CPProtocol.objects.filter(control_point=control_point).delete()
-    print('good')
-    context = {'c_p': control_point}
-    date_update = datetime.datetime.strftime(timezone.now(), '%Y-%m-%d %H:%M:%S')
+    context = dict(c_p=control_point)
     pars_file = XLSXClass(request.FILES['file'])
+    date_update = datetime.datetime.strftime(timezone.now(), '%Y-%m-%d %H:%M:%S')
     try:
         data_dict = pars_file.start_pars()
     except ValueError as ex:

@@ -3,7 +3,6 @@ import json
 from django.contrib.auth.models import User
 from django.db.models import Model, CharField, ForeignKey, CASCADE, IntegerField, DateTimeField, TextField
 from django.db import models
-from django.utils import timezone
 
 
 class ControlPoint(Model):

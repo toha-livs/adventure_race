@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import HomeView, CPView, ExcelDump, NameUpload, DeleteCpp, ResultsGuest, PasswordUpload, test_cpp, review_result
+from .views import (HomeView, CPView, ExcelDump, NameUpload, DeleteCpp,
+                    ResultsGuest, PasswordUpload, test_cpp, review_result)
 
 urlpatterns = [
     path('', ResultsGuest.as_view(), name='guest'),

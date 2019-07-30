@@ -1,18 +1,16 @@
-from wsgiref.util import FileWrapper
-
-import pandas as pd
+import json
 
 from django.db.utils import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import transaction
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
 from django.views.generic.base import View
 from django.contrib import messages
-from race.models import ControlPoint, CPProtocol, ResultRuns, RunGuys
+from race.models import ControlPoint, ResultRuns, RunGuys
 from race.utils import post_from_stuff, WriterMessages, Results, AdminView, XLSXClass
 
 
@@ -23,26 +21,24 @@ class HomeView(View, WriterMessages):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request, **kwargs):
+    def get(self, request):
+        context = dict()
         if request.user.is_superuser:
+            context['c_p'] = dict(name='Admin')
             cpp = ResultRuns.objects.all().first()
-            context = dict()
             if cpp:
-                runers, colums = cpp.get_dicts()
-                context = {'runer': runers,
-                           'colums': colums
-                           }
-            context.update({'c_p': {'name': 'Admin'}})
+                context['runer'] = json.loads(cpp.pre_result)
+                context['colums'] = json.loads(cpp.passed_checkpoint)
             context.update(self.check_message(messages.get_messages(request)))
             return render(request, 'race/super_home.html', context=context)
-        control_point = ControlPoint.objects.filter(user=request.user).first()
-        return render(request, 'race/home.html', context={'status': False, 'c_p': control_point})
+        else:
+            context['status'] = False
+            context['c_p'] = ControlPoint.objects.filter(user=request.user).first()
+            return render(request, 'race/home.html', context=context)
 
-    def post(self, request, **kwargs):
+    def post(self, request):
         context = post_from_stuff(request)
-        print('hi')
         Results()
-        print('hi')
         return render(request, 'race/home.html', context=context)
 
 
