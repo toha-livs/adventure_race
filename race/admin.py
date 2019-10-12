@@ -4,7 +4,7 @@ from .models import ControlPoint, CPProtocol, RunGuys, ResultRuns
 
 @admin.register(CPProtocol)
 class CPProtocolAdmin(admin.ModelAdmin):
-    list_filter = ['number']
+    list_filter = ['number', 'control_point__name']
 
 
 
