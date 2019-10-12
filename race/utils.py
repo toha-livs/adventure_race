@@ -19,7 +19,7 @@ class AdminView(View):
         return HttpResponseForbidden()
 
 
-class Scope:
+class Scope(object):
     final = []
     usage_list = []
     cp_usage = []
@@ -42,7 +42,7 @@ class Scope:
         return x[cp['id']]
 
     def run(self):
-        self.cp_usage = list(self.cp)
+        self.cp_usage = list(self.cp).copy()
         self.cp_usage.reverse()
         self.usage_list = self.runers
         for cp in self.cp_usage:
@@ -51,28 +51,24 @@ class Scope:
             self.final += runers
 
 
-class Results:
+class Results(object):
     passed_checkpoints = []
     response = []
     pre_response = {}
 
     def __init__(self):
+        ResultRuns.objects.all().delete()
         cpp = self.get_cp()
         self.run_cp(cpp)
         self.format_list(sort=False)
+
         self.set_run_names()
         self.save_result()
 
     def save_result(self):
-        res = ResultRuns.objects.all().first()
-        print(self.response)
-        if res:
-            res.delete()
-            ResultRuns(pre_result=json.dumps(self.response), passed_checkpoint=json.dumps(self.passed_checkpoints),
-                       date_update=timezone.now()).save()
-        else:
-            ResultRuns(pre_result=json.dumps(self.response), passed_checkpoint=json.dumps(self.passed_checkpoints),
-                       date_update=timezone.now()).save()
+        ResultRuns.objects.create(pre_result=json.dumps(self.response),
+                                  passed_checkpoint=json.dumps(self.passed_checkpoints),
+                                  date_update=timezone.now())
 
     @staticmethod
     def get_cp():
@@ -85,15 +81,20 @@ class Results:
             if guy:
                 run.update({'name': guy.name})
             upd_resp.append(run)
+
         self.response = upd_resp
 
+        del upd_resp
+
     def format_list(self, sort=False):
+        self.response = []
         for key, value in self.pre_response.items():
             self.response.append({'number': key, **value})
         if sort:
             list_sorted = Scope(self.response, self.passed_checkpoints)
             list_sorted.run()
-            self.response = list_sorted.final
+            self.response = list_sorted.final.copy()
+            del (list_sorted)
 
     def run_cp(self, cpp):
         cpp.order_by('number')
@@ -104,6 +105,7 @@ class Results:
                 self.pre_response[cp.number] = {'number': cp.number, cp.control_point.id: cp.date.timestamp()}
             if {'id': cp.control_point.id, 'name': cp.control_point.name} not in self.passed_checkpoints:
                 self.passed_checkpoints.append({'id': cp.control_point.id, 'name': cp.control_point.name})
+        del cpp
         # print(self.response)
 
 
@@ -145,7 +147,6 @@ class XLSXClass:
 
     @staticmethod
     def format_date(date):
-        print(f'####date##{date}####')
         date = date.strip()
         if 'NaT' in date or 'NaN' in date:
             return None
@@ -165,7 +166,6 @@ class XLSXClass:
 
     @staticmethod
     def int_formater(word: str):
-        print(f'####int####{word}####')
         try:
             return int(word)
         except:
@@ -184,7 +184,6 @@ class XLSXClass:
 
     def start_pars(self):
         test = pd.read_excel(self.file, index_col=0)
-        print(test)
         if self.cont_point:
             return [{'number': int(row[:row.find(' ')]), 'password': self.pars_pass(row[row.rfind('  '):])} for row in
                     str(test).split('\n')[2:]]
@@ -207,7 +206,6 @@ class XLSXClass:
     @staticmethod
     def check_is_valid(date):
         if isinstance(date, float):
-            print(date, datetime.datetime.fromtimestamp(date))
             return datetime.datetime.fromtimestamp(date)
             # date = datetime.datetime.fromtimestamp(date)
             # return datetime.datetime.strftime(date, '%d %H:%M:%S')
@@ -217,7 +215,6 @@ class XLSXClass:
 
     def _write_data(self, pre_result):
         for row, i in enumerate(pre_result):
-            print(i.get('number'), '####i')
             row = row + 1
             self.ws.write(row, 0, self.check_is_valid(i.get('number')))
             for num_col, col in enumerate(self.colums):

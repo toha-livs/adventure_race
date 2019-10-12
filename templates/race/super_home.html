@@ -19,11 +19,12 @@
                         <a class="btn btn-info" href="{% url 'excel_dump' %}">Экспорт в Excel</a>
                     </div>
                     <div class="col-3">
-                        <form action="{% url 'password_cp_upload' %}" method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <input type="file" style="display: none" name="file" id="file_password" onchange="this.form.submit()">
-                            <label for="file_password" class="btn btn-warning">Пароли КП</label>
-                        </form>
+{#                        <form action="{% url 'password_cp_upload' %}" method="post" enctype="multipart/form-data">#}
+{#                            {% csrf_token %}#}
+{#                            <input type="file" style="display: none" name="file" id="file_password" onchange="this.form.submit()">#}
+{#                            <label for="file_password" class="btn btn-warning">Пароли КП</label>#}
+{#                        </form>#}
+                        <a class="btn btn-warning" href="{% url 'cpp' %}">добавить кп</a>
                     </div>
                     <div class="col-3">
                         <form action="{% url 'name_upload' %}" method="post" enctype="multipart/form-data">
@@ -31,6 +32,12 @@
                             <input type="file" style="display: none" name="file" id="file_name" onchange="this.form.submit()">
                             <label for="file_name" class="btn btn-success">Имена бегунов</label>
                         </form>
+                    </div>
+                    <div class="col-3 offset-2 mt-4 mb-2">
+                        <a href="{% url 'review-result' %}" class="btn btn-primary">Обновить результаты</a>
+                    </div>
+                    <div class="col-3 offset-2 mt-4 mb-2">
+                        <a href="{% url 'delete-result' %}" class="btn btn-danger">Удалить результаты</a>
                     </div>
                 </div>
             </div>

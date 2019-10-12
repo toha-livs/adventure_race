@@ -6,11 +6,12 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
 from django.views.generic.base import View
 from django.contrib import messages
-from race.models import ControlPoint, ResultRuns, RunGuys
+from race.models import ControlPoint, ResultRuns, RunGuys, CPProtocol
 from race.utils import post_from_stuff, WriterMessages, Results, AdminView, XLSXClass
 
 
@@ -38,8 +39,30 @@ class HomeView(View, WriterMessages):
 
     def post(self, request):
         context = post_from_stuff(request)
+
         Results()
         return render(request, 'race/home.html', context=context)
+
+
+class CPPView(View, WriterMessages):
+
+    def post(self, request, *args, **kwargs):
+        time_now = timezone.now()
+        number = request.POST.get('number')
+        message = dict(request=request,
+                       success=False,
+                       title='Компостирование',
+                       content='Запрс на компостирование участника номер {} со временем {} неудачен.'.format(number, time_now)
+                       )
+        if number:
+            cp = ControlPoint.objects.filter(user=request.user).first()
+            cpp = CPProtocol(number=int(number))
+            cpp.date = time_now
+            cpp.control_point = cp
+            cpp.save()
+            message.update(dict(success=False, content='Запрс на компостирование участника номер {} со временем {} успешен.'.format(number, time_now)))
+        self.write_msg(**message)
+        return redirect('home')
 
 
 class ResultsGuest(View):
@@ -67,7 +90,6 @@ class CPView(AdminView, WriterMessages):
                 user = User.objects.create_user(data['login'], None, data['password'])
                 user.save()
                 ControlPoint(name=data['login'], order=data['order'], user=user).save()
-                print('good')
         except Exception as ex:
             if str(ex)[str(ex).rfind(' ') + 1:] == 'auth_user.username':
                 error = 'Имя КП не уникально'
@@ -76,6 +98,8 @@ class CPView(AdminView, WriterMessages):
             self.write_msg(request, False, error)
         return redirect('home')
 
+    def get(self, request, *args, **kwargs):
+        return render(request, 'race/add_cp.html')
 
 class ExcelDump(AdminView, Results, XLSXClass):
 
@@ -165,5 +189,14 @@ def test_cpp(request):
 @require_http_methods(["GET"])
 def review_result(request):
     if request.user.is_superuser:
-        Results()
+        res = Results()
+        del(res)
+        return redirect('home')
+
+
+@login_required
+@require_http_methods(["GET"])
+def delete_result(request):
+    if request.user.is_superuser:
+        ResultRuns.objects.all().delete()
         return redirect('home')

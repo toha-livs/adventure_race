@@ -1,3 +1,4 @@
+environ
 Django==2.2.2
 django-environ==0.4.5
 gunicorn==19.9.0
