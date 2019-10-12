@@ -117,7 +117,9 @@ class CPView(AdminView, WriterMessages):
             return redirect('home')
         try:
             with transaction.atomic():
-                user = User.objects.create_user(data['login'], None, data['password'])
+                user = User.objects.filter(username=data['login']).first()
+                if user is None:
+                    user = User.objects.create_user(data['login'], None, data['password'])
                 user.save()
                 ControlPoint.objects.create(name=data['name'], order=data['order'], user=user, description=data['description'])
         except Exception as ex:
