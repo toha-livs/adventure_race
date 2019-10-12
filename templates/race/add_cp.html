@@ -6,8 +6,10 @@
             <div class="col-4 offset-4">
                 <form action="{% url 'cpp' %}" method="post">
                     {% csrf_token %}
-                    <input placeholder="cp name" class="form-control mt-2 mb-2" name="login">
+                    <input placeholder="login" class="form-control mt-2 mb-2" name="login">
                     <input placeholder="password" class="form-control mt-2 mb-2" name="password">
+                    <input placeholder="cp name" class="form-control mt-2 mb-2" name="name">
+                    <input placeholder="cp description" class="form-control mt-2 mb-2" name="description">
                     <input placeholder="order" class="form-control mt-2 mb-2" name="order">
                     <button class="btn btn-success mt-2">submit</button>
                 </form>

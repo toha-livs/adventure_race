@@ -119,7 +119,7 @@ class CPView(AdminView, WriterMessages):
             with transaction.atomic():
                 user = User.objects.create_user(data['login'], None, data['password'])
                 user.save()
-                ControlPoint(name=data['login'], order=data['order'], user=user).save()
+                ControlPoint.objects.create(name=data['name'], order=data['order'], user=user, description=data['description'])
         except Exception as ex:
             if str(ex)[str(ex).rfind(' ') + 1:] == 'auth_user.username':
                 error = 'Имя КП не уникально'
