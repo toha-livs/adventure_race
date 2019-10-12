@@ -74,6 +74,7 @@
     </div>
 {% endblock content %}
 {% block script %}
+    <script>
 $(function () {
             $('#delete_all').click(function () {
                 let x = confirm('удалить все данные?')
@@ -84,4 +85,5 @@ $(function () {
                 }
             })
         })
+    </script>
 {% endblock script %}

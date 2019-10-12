@@ -34,7 +34,13 @@ class HomeView(View, WriterMessages):
             return render(request, 'race/super_home.html', context=context)
         else:
             context['status'] = False
-            context['c_p'] = ControlPoint.objects.filter(user=request.user).first()
+            bg_colors = ['warning', 'info', 'danger', 'success']
+            context['cs_ps'] = []
+            for ind, obj in enumerate(ControlPoint.objects.filter(user=request.user)):
+                if ind == 0:
+                    setattr(obj, 'first', True)
+                setattr(obj, 'bg', bg_colors[ind])
+                context['cs_ps'].append(obj)
             return render(request, 'race/home.html', context=context)
 
     def post(self, request):
@@ -42,6 +48,30 @@ class HomeView(View, WriterMessages):
 
         Results()
         return render(request, 'race/home.html', context=context)
+
+
+class AddResult(View, WriterMessages):
+
+    def post(self, request, cp_id, *args, **kwargs):
+        time_now = timezone.now()
+        number = request.POST.get('number')
+        message = dict(request=request,
+                       success=False,
+                       title='Компостирование',
+                       content='Запрс на компостирование участника номер {} со временем {} неудачен.'.format(number,
+                                                                                                             time_now)
+                       )
+        if number:
+            cp = ControlPoint.objects.filter(id=cp_id).first()
+            cpp = CPProtocol(number=int(number))
+            cpp.date = time_now
+            cpp.control_point = cp
+            cpp.save()
+            message.update(dict(success=False,
+                                content='Запрс на компостирование участника номер {} со временем {} успешен.'.format(
+                                    number, time_now)))
+        self.write_msg(**message)
+        return redirect('home')
 
 
 class CPPView(View, WriterMessages):
