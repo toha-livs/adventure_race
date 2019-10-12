@@ -208,13 +208,17 @@ class DeleteCpp(AdminView, WriterMessages):
 
 
 @login_required
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "POST"])
 def test_cpp(request):
     if request.user.is_superuser:
-        Results()
-        # cp = ControlPoint.objects.filter(id=id).first()
-        # User.objects.filter(id=cp.user.id).first().delete()
-        return redirect('home')
+        if request.method == 'POST':
+            data = request.POST.dict()
+            user = User.objects.filter(id=data['user_id']).first()
+            user.set_password(data['password'])
+            user.save()
+            return redirect('home')
+        context = {'users': User.objects.all()}
+        return render(request, 'race/set_password.html', context=context)
 
 
 @login_required
