@@ -103,8 +103,8 @@ class Results(object):
                 self.pre_response[cp.number].update({cp.control_point.id: cp.date.timestamp()})
             else:
                 self.pre_response[cp.number] = {'number': cp.number, cp.control_point.id: cp.date.timestamp()}
-            if {'id': cp.control_point.id, 'name': cp.control_point.name} not in self.passed_checkpoints:
-                self.passed_checkpoints.append({'id': cp.control_point.id, 'name': cp.control_point.name})
+            if {'id': cp.control_point.id, 'name': cp.control_point.description} not in self.passed_checkpoints:
+                self.passed_checkpoints.append({'id': cp.control_point.id, 'name': cp.control_point.description})
         del cpp
         # print(self.response)
 
