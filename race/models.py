@@ -26,6 +26,11 @@ class CPProtocol(Model):
     number = IntegerField()
     date = DateTimeField()
 
+    @property
+    def cp_descr(self):
+        return self.control_point.description
+
+
     class Meta:
         db_table = 'c_p_protocol'
         ordering = ['-date']
